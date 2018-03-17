@@ -4,20 +4,20 @@ require("./styles/main.scss");
 var Elm = require("../elm/Main");
 var elmApp = Elm.Main.embed(document.getElementById("main"));
 
-elmApp.ports.sendToken.subscribe(token => {
+elmApp.ports.sendToken.subscribe(function(token) {
   localStorage.setItem("token", token);
   sendTokenToElm(token);
 });
 
-const init = () => {
+function init() {
   const token = localStorage.getItem("token");
   sendTokenToElm(token);
-};
+}
 
-const sendTokenToElm = token => {
+function sendTokenToElm(token) {
   if (token) {
     elmApp.ports.receiveToken.send(token);
   }
-};
+}
 
 init();

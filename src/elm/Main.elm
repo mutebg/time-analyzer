@@ -11,6 +11,7 @@ import Date exposing (..)
 import Task exposing (..)
 import Navigation
 import UrlParser as Url exposing ((</>), (<?>), s, int, stringParam, top)
+import List.Extra exposing (remove)
 
 
 -- APP
@@ -21,11 +22,23 @@ main =
     Navigation.program UrlChange { init = init, view = view, update = update, subscriptions = subscriptions }
 
 
+defaultFilter : Filter
+defaultFilter =
+    { show = False
+    , timeFrom = 0
+    , timeTo = 23
+    , minTimeSpent = 0
+    , categories = []
+    , query = Nothing
+    }
+
+
 model : Model
 model =
     { data = []
     , token = Nothing
     , page = Login
+    , filter = defaultFilter
     }
 
 
@@ -96,6 +109,9 @@ update msg model =
         ReceiveToken token ->
             ( { model | token = Just token }, Cmd.batch [ requestToday ] )
 
+        Logout ->
+            ( { model | token = Nothing }, Cmd.batch [ sendToken "", Navigation.newUrl "#login" ] )
+
         LoadDocuments (Ok data) ->
             ( { model | data = data }, Cmd.none )
 
@@ -106,8 +122,68 @@ update msg model =
             in
                 ( model, Cmd.none )
 
+        ToggleFilter ->
+            let
+                currFilter =
+                    model.filter
+
+                filter =
+                    { currFilter | show = not currFilter.show }
+            in
+                ( { model | filter = filter }, Cmd.none )
+
+        FilterSet key value ->
+            let
+                newFilter =
+                    updateFilter model.filter key value
+            in
+                ( { model | filter = newFilter }, Cmd.none )
+
+        ResetFilter ->
+            ( { model | filter = defaultFilter }, Cmd.none )
+
         _ ->
             ( model, Cmd.none )
+
+
+updateFilter : Filter -> String -> String -> Filter
+updateFilter f key value =
+    let
+        intValue =
+            Result.withDefault 0 (String.toInt value)
+    in
+        case key of
+            "query" ->
+                let
+                    query =
+                        if value == "" then
+                            Nothing
+                        else
+                            Just value
+                in
+                    { f | query = query }
+
+            "timeFrom" ->
+                { f | timeFrom = intValue }
+
+            "timeTo" ->
+                { f | timeTo = intValue }
+
+            "minTimeSpent" ->
+                { f | minTimeSpent = intValue }
+
+            "category" ->
+                let
+                    newCategories =
+                        if List.member value f.categories then
+                            remove value f.categories
+                        else
+                            value :: f.categories
+                in
+                    { f | categories = newCategories }
+
+            _ ->
+                f
 
 
 
@@ -137,7 +213,7 @@ checkToken : Maybe String -> (Token -> Cmd msg) -> Cmd msg
 checkToken token task =
     let
         login =
-            Navigation.newUrl ""
+            Navigation.newUrl "#login"
     in
         case token of
             Nothing ->
