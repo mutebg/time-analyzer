@@ -1,0 +1,74 @@
+@import "_reset";
+
+* {
+  box-sizing: border-box;
+}
+
+$border-color: #ccc;
+
+.header {
+  height: 4em;
+}
+
+.btn {
+  padding: 0.5em;
+  border: 1px solid $border-color;
+  border-radius: 2em;
+  line-height: 1em;
+  display: inline-block;
+  text-decoration: none;
+  height: 2em;
+  cursor: pointer;
+}
+
+.day {
+}
+
+.hour {
+  border-top: 1px solid $border-color;
+  padding: 0.5em;
+  position: relative;
+
+  &__title {
+    font-size: 100%;
+    position: absolute;
+    top: -0.6em;
+    left: 0;
+    margin: 0;
+    background: #fff;
+    padding: 0.1em;
+  }
+
+  &__list {
+    display: flex;
+    overflow: auto;
+    width: 100%;
+  }
+}
+
+.activity {
+  display: inline-block;
+  background: #ccc;
+  padding: 0.2em 0.3em;
+  border-radius: 2em;
+  margin-right: 2px;
+  text-align: center;
+  min-width: 1em;
+
+  &__name {
+    writing-mode: vertical-rl;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 7em;
+  }
+
+  &__category {
+    display: none;
+  }
+
+  &__time {
+    display: block;
+    padding: 0.3em 0;
+  }
+}
