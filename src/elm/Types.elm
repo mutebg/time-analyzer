@@ -26,7 +26,18 @@ type alias Activity =
 
 type alias Hour =
     { date : String
+    , hour : Int
     , activities : List Activity
+    }
+
+
+type alias Filter =
+    { show : Bool
+    , timeFrom : Int
+    , timeTo : Int
+    , minTimeSpent : Int
+    , categories : List String
+    , query : Maybe String
     }
 
 
@@ -34,6 +45,7 @@ type alias Model =
     { data : List Hour
     , token : Maybe Token
     , page : Page
+    , filter : Filter
     }
 
 
@@ -53,3 +65,5 @@ type Msg
     | ReceiveToken String
     | Logout
     | ToggleFilter
+    | ResetFilter
+    | FilterSet String String

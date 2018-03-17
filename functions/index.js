@@ -59,6 +59,7 @@ app.get("/document/:date_from/:date_to", (req, res) => {
 
         return {
           Date: hour,
+          Hour: new Date(Date.parse(hour)).getHours(),
           Activities: activities
         };
       });

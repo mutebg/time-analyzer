@@ -34,6 +34,7 @@ hourDecoder : Decode.Decoder Hour
 hourDecoder =
     DecodePipe.decode Hour
         |> DecodePipe.required "Date" Decode.string
+        |> DecodePipe.required "Hour" Decode.int
         |> DecodePipe.required "Activities" (Decode.list activityDecoder)
 
 
