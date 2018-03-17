@@ -4,14 +4,42 @@
   box-sizing: border-box;
 }
 
-$border-color: #ccc;
+$border-color: #a1acac;
+$text-color: #697c8c;
+
+body {
+  color: $text-color;
+  font-family: Helvetica;
+}
 
 .header {
-  height: 4em;
+  height: 3em;
+  border-bottom: 1px solid $border-color;
+  padding: 0 2em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__date {
+    .btn {
+      margin: auto 0.5em;
+    }
+  }
+
+  &__filter {
+  }
+
+  &__user {
+  }
+}
+
+.main {
+  height: calc(100vh - 3em);
+  overflow: auto;
 }
 
 .btn {
-  padding: 0.5em;
+  padding: 0.5em 0.8em;
   border: 1px solid $border-color;
   border-radius: 2em;
   line-height: 1em;
@@ -19,48 +47,56 @@ $border-color: #ccc;
   text-decoration: none;
   height: 2em;
   cursor: pointer;
+  color: $text-color;
 }
 
 .day {
+  height: 100%;
+  width: 100%;
+  // overflow: auto;
+  // float: left;
+  // width: 100%;
+  // overflow-x: auto;
+  // white-space: nowrap;
+  // overflow-y: hidden;
 }
 
 .hour {
-  border-top: 1px solid $border-color;
-  padding: 0.5em;
-  position: relative;
+  border-bottom: 1px solid $border-color;
+  width: 100%;
+  //height: 60px;
+  display: flex;
+  padding: 0.3em 0.1em;
+  align-content: center;
 
   &__title {
-    font-size: 100%;
-    position: absolute;
-    top: -0.6em;
-    left: 0;
-    margin: 0;
-    background: #fff;
-    padding: 0.1em;
+    font-size: 2em;
+    font-weight: bold;
+    padding: 0.3em;
+    min-width: 60px;
+    text-align: right;
   }
 
   &__list {
-    display: flex;
-    overflow: auto;
     width: 100%;
+    display: flex;
+    flex-wrap: wrap;
   }
 }
 
 .activity {
-  display: inline-block;
-  background: #ccc;
-  padding: 0.2em 0.3em;
-  border-radius: 2em;
-  margin-right: 2px;
-  text-align: center;
-  min-width: 1em;
+  width: 25%;
+  display: flex;
+  align-items: baseline;
+  margin: 3px 0;
 
   &__name {
-    writing-mode: vertical-rl;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-height: 7em;
+    max-height: 100%;
+    margin-left: 3px;
+    line-height: 1.3;
   }
 
   &__category {
@@ -68,7 +104,12 @@ $border-color: #ccc;
   }
 
   &__time {
-    display: block;
-    padding: 0.3em 0;
+    font-size: 0.9em;
+    padding: 0.2em;
+    display: inline-block;
+    background: #ccc;
+    border-radius: 3px;
+    min-width: 42px;
+    text-align: center;
   }
 }

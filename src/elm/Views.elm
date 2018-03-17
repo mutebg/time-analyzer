@@ -22,28 +22,38 @@ dailyView model day =
 printHeader : String -> Html Msg
 printHeader day =
     div [ class "header" ]
-        [ button [ onClick RequestToday, class "btn" ] [ text "Filter" ]
-        , a [ href <| "#day/" ++ (linkDay day -1), class "btn" ]
-            [ text "<" ]
-        , span []
-            [ text day ]
-        , a
-            [ href <| "#day/" ++ (linkDay day 1), class "btn" ]
-            [ text ">" ]
-        , button [ onClick RequestToday, class "btn" ] [ text "Today" ]
+        [ div [ class "header__filter" ]
+            [ button [ onClick RequestToday, class "btn" ] [ text "Filter" ]
+            ]
+        , div
+            [ class "header__date" ]
+            [ a [ href <| "#day/" ++ (linkDay day -1), class "btn" ]
+                [ text "<" ]
+            , span []
+                [ text day ]
+            , a
+                [ href <| "#day/" ++ (linkDay day 1), class "btn" ]
+                [ text ">" ]
+            , button [ onClick RequestToday, class "btn" ] [ text "Today" ]
+            ]
+        , div [ class "header__user" ]
+            [ button [ onClick Logout, class "btn" ] [ text "Logout" ]
+            ]
         ]
 
 
 printDay : List Hour -> Html Msg
 printDay hours =
-    div [ class "day" ]
-        (List.map printHour hours)
+    div [ class "main" ]
+        [ div [ class "day" ]
+            (List.map printHour hours)
+        ]
 
 
 printHour : Hour -> Html Msg
 printHour h =
     div [ class "hour" ]
-        [ h2 [ class "hour__title" ] [ text h.date ]
+        [ h2 [ class "hour__title" ] [ text <| parseHour h.date ]
         , div [ class "hour__list" ] (List.map printActivity h.activities)
         ]
 
@@ -88,9 +98,17 @@ linkDay date days =
         |> formatDate
 
 
+parseHour : String -> String
+parseHour date =
+    date
+        |> unsafeFromString
+        |> hour
+        |> toString
+
+
 loginView : String -> Html Msg
 loginView token =
-    div [ class "login-page " ]
+    div [ class "login-page" ]
         [ p []
             [ text "In order to access this page you need API key from Resque time, You can find your key "
             , a [ href "https://www.rescuetime.com/anapi/manage", target "blank" ] [ text "here" ]

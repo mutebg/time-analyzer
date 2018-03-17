@@ -51,3 +51,5 @@ type Msg
     | TypeToken String
     | SubmitLoginForm
     | ReceiveToken String
+    | Logout
+    | ToggleFilter

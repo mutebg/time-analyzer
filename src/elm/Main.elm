@@ -96,6 +96,9 @@ update msg model =
         ReceiveToken token ->
             ( { model | token = Just token }, Cmd.batch [ requestToday ] )
 
+        Logout ->
+            ( { model | token = Nothing }, Cmd.batch [ sendToken "", Navigation.newUrl "#login" ] )
+
         LoadDocuments (Ok data) ->
             ( { model | data = data }, Cmd.none )
 
@@ -137,7 +140,7 @@ checkToken : Maybe String -> (Token -> Cmd msg) -> Cmd msg
 checkToken token task =
     let
         login =
-            Navigation.newUrl ""
+            Navigation.newUrl "#login"
     in
         case token of
             Nothing ->
