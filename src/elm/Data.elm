@@ -10,7 +10,8 @@ import Date exposing (..)
 
 apiBase : String
 apiBase =
-    "http://localhost:5000/etsy-syncer/us-central1/api/"
+    --"http://localhost:5000/etsy-syncer/us-central1/api/"
+    "https://us-central1-time-analyzer-68cd5.cloudfunctions.net/api/"
 
 
 documentDecoder : Decode.Decoder Document

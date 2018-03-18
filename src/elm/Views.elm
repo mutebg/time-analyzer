@@ -79,8 +79,43 @@ printActivity a =
     div [ class "activity" ]
         [ span [ class "activity__time" ] [ text <| secToMin a.totalTimeSpent ]
         , span [ class "activity__name" ] [ text a.activity ]
-        , span [ class "activity__category" ] [ text a.category ]
+        , div [ class "activity__popup" ]
+            [ printActivityPopup a
+            ]
         ]
+
+
+printActivityPopup : Activity -> Html Msg
+printActivityPopup a =
+    let
+        docs =
+            a.documents
+                |> List.map
+                    (\c ->
+                        dd []
+                            [ span [ class "activity-popup__time" ] [ text <| secToMin c.timeSpent ]
+                            , span [ title c.name ] [ text c.name ]
+                            ]
+                    )
+    in
+        div [ class "activity-popup" ]
+            [ dl []
+                ([ dt [] [ text "Name" ]
+                 , dd [] [ text a.activity ]
+                 , dt [] [ text "Category" ]
+                 , dd [] [ text a.category ]
+                 , dt [] [ text "Productivity" ]
+                 , dd []
+                    [ text <| formatProductivity a.productivity ]
+                 , dt
+                    []
+                    [ text "Total time" ]
+                 , dd [] [ text <| secToMin a.totalTimeSpent ]
+                 , dt [] [ text "Documents" ]
+                 ]
+                    ++ docs
+                )
+            ]
 
 
 filterHour : Filter -> Hour -> Bool
@@ -140,52 +175,66 @@ printFilter f h =
             Maybe.withDefault "" f.query
     in
         div []
-            [ div []
-                [ label [ for "time-from" ] [ text "Time from" ]
-                , input
-                    [ type_ "number"
-                    , id "time-from"
-                    , onInput (FilterSet "timeFrom")
-                    , value <| toString f.timeFrom
-                    ]
+            [ h2 [ class "filter__title" ]
+                [ text "Time intefval" ]
+            , div [ class "filter__section time-interval" ]
+                [ div
                     []
-                ]
-            , div []
-                [ label [ for "time-to" ] [ text "Time To" ]
-                , input
-                    [ type_ "number"
-                    , id "time-to"
-                    , onInput (FilterSet "timeTo")
-                    , value <| toString f.timeTo
+                    [ label [ for "time-from", class "help" ] [ text "From" ]
+                    , input
+                        [ type_ "number"
+                        , id "time-from"
+                        , onInput (FilterSet "timeFrom")
+                        , Html.Attributes.min "0"
+                        , Html.Attributes.max "23"
+                        , value <| toString f.timeFrom
+                        ]
+                        []
                     ]
-                    []
+                , div []
+                    [ label [ for "time-to", class "help" ] [ text "To" ]
+                    , input
+                        [ type_ "number"
+                        , id "time-to"
+                        , Html.Attributes.min "0"
+                        , Html.Attributes.max "23"
+                        , onInput (FilterSet "timeTo")
+                        , value <| toString f.timeTo
+                        ]
+                        []
+                    ]
                 ]
-            , div []
-                [ label [ for "min-spent-time" ] [ text "Min spent time" ]
+            , div [ class "filter__section" ]
+                [ label
+                    [ for "min-spent-time", class "filter__title" ]
+                    [ text "Min spent time" ]
                 , input
                     [ type_ "number"
                     , id "min-spent-time"
+                    , Html.Attributes.min "0"
                     , onInput (FilterSet "minTimeSpent")
                     , value <| toString f.minTimeSpent
                     ]
                     []
                 ]
-            , div []
-                [ label [ for "query" ] [ text "Document name" ]
+            , div [ class "filter__section" ]
+                [ label [ for "query", class "filter__title" ] [ text "Document name" ]
                 , input
-                    [ type_ "text"
+                    [ type_ "search"
                     , id "query"
                     , onInput (FilterSet "query")
                     , value <| queryStr
                     ]
                     []
                 ]
-            , div []
-                [ printFilterCategories uniqCat f.categories
+            , div [ class "filter__section" ]
+                [ h2 [ class "filter__title" ]
+                    [ text "Categories" ]
+                , printFilterCategories uniqCat f.categories
                 ]
             , div
                 []
-                [ button [ onClick ResetFilter ] [ text "reset filter" ]
+                [ button [ onClick ResetFilter, class "btn" ] [ text "reset filter" ]
                 ]
             ]
 
@@ -249,6 +298,11 @@ parseHour date =
         |> toString
 
 
+formatProductivity : Int -> String
+formatProductivity p =
+    toString p
+
+
 getAllUniqCategory : List Hour -> List String
 getAllUniqCategory hours =
     hours
@@ -262,13 +316,13 @@ getAllUniqCategory hours =
 loginView : String -> Html Msg
 loginView token =
     div [ class "login-page" ]
-        [ p []
-            [ text "In order to access this page you need API key from Resque time, You can find your key "
-            , a [ href "https://www.rescuetime.com/anapi/manage", target "blank" ] [ text "here" ]
-            ]
-        , Html.form [ onSubmit SubmitLoginForm ]
-            [ label [ for "token" ] [ text "Enter your token" ]
+        [ Html.form [ onSubmit SubmitLoginForm ]
+            [ p []
+                [ text "In order to access this page you need API key from www.rescuetime.com, you can find your key "
+                , a [ href "https://www.rescuetime.com/anapi/manage", target "blank" ] [ text "here" ]
+                ]
+            , label [ for "token" ] [ text "Enter your token" ]
             , input [ id "token", type_ "text", onInput (\e -> TypeToken e) ] []
-            , button [] [ text "login" ]
+            , button [ class "btn" ] [ text "login" ]
             ]
         ]

@@ -44,7 +44,6 @@ model =
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
-    --( model, Cmd.batch [ (loadDocuments model.day model.day model.token) ] )
     ( model, Cmd.none )
 
 
@@ -107,7 +106,16 @@ update msg model =
             ( model, sendToken <| Maybe.withDefault "" model.token )
 
         ReceiveToken token ->
-            ( { model | token = Just token }, Cmd.batch [ requestToday ] )
+            let
+                msg =
+                    case model.page of
+                        Login ->
+                            Cmd.batch [ requestToday ]
+
+                        Daily x ->
+                            Cmd.none
+            in
+                ( { model | token = Just token }, msg )
 
         Logout ->
             ( { model | token = Nothing }, Cmd.batch [ sendToken "", Navigation.newUrl "#login" ] )
