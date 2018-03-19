@@ -8,8 +8,9 @@ import Date.Extra.Period exposing (add, Period(..))
 import Date.Extra.Utils exposing (unsafeFromString)
 import Date exposing (..)
 import Date.Extra.Config.Config_en_au exposing (config)
-import Date.Extra.Format exposing (..)
+import Date.Extra.Format exposing (format)
 import List.Extra exposing (unique)
+import Data exposing (productivityList)
 
 
 dailyView : Model -> String -> Html Msg
@@ -30,8 +31,7 @@ printHeader day =
             [ class "header__date" ]
             [ a [ href <| "#day/" ++ (linkDay day -1), class "btn" ]
                 [ text "<" ]
-            , span []
-                [ text day ]
+            , input [ type_ "date", value day, onInput (\c -> NavigateToDay c) ] []
             , a
                 [ href <| "#day/" ++ (linkDay day 1), class "btn" ]
                 [ text ">" ]
@@ -69,20 +69,31 @@ printHour filter h =
         , div [ class "hour__list" ]
             (h.activities
                 |> List.filter (filterActiviry filter)
-                |> List.map printActivity
+                |> List.map (printActivity h filter)
             )
         ]
 
 
-printActivity : Activity -> Html Msg
-printActivity a =
-    div [ class "activity" ]
-        [ span [ class "activity__time" ] [ text <| secToMin a.totalTimeSpent ]
-        , span [ class "activity__name" ] [ text a.activity ]
-        , div [ class "activity__popup" ]
-            [ printActivityPopup a
+printActivity : Hour -> Filter -> Activity -> Html Msg
+printActivity h f a =
+    let
+        id =
+            (toString h.hour) ++ a.activity
+
+        event =
+            FilterSet "openActivity" id
+
+        ( className, popup ) =
+            if f.openActivity == (Just id) then
+                ( " activity--open", printActivityPopup a )
+            else
+                ( "", text "" )
+    in
+        div [ class ("activity" ++ className) ]
+            [ span [ class "activity__time" ] [ text <| secToMin a.totalTimeSpent ]
+            , span [ class "activity__name", onClick event ] [ text a.activity ]
+            , popup
             ]
-        ]
 
 
 printActivityPopup : Activity -> Html Msg
@@ -99,7 +110,12 @@ printActivityPopup a =
                     )
     in
         div [ class "activity-popup" ]
-            [ dl []
+            [ button
+                [ class "activity-popup__close"
+                , onClick (FilterSet "openActivity" "")
+                ]
+                [ text "×" ]
+            , dl []
                 ([ dt [] [ text "Name" ]
                  , dd [] [ text a.activity ]
                  , dt [] [ text "Category" ]
@@ -141,6 +157,12 @@ filterActiviry filter act =
             else
                 not (List.member act.category filter.categories)
 
+        filterProductivity =
+            if List.length filter.productivity == 0 then
+                True
+            else
+                not (List.member act.productivity filter.productivity)
+
         matchActivityName =
             case filter.query of
                 Just term ->
@@ -149,7 +171,7 @@ filterActiviry filter act =
                 _ ->
                     True
     in
-        if act.totalTimeSpent >= minTime && filterCategory && (List.length docs > 0 || matchActivityName) then
+        if act.totalTimeSpent >= minTime && filterCategory && filterProductivity && (List.length docs > 0 || matchActivityName) then
             True
         else
             False
@@ -232,6 +254,11 @@ printFilter f h =
                     [ text "Categories" ]
                 , printFilterCategories uniqCat f.categories
                 ]
+            , div [ class "filter__section" ]
+                [ h2 [ class "filter__title" ]
+                    [ text "Productivity" ]
+                , printFilterProductivity productivityList f.productivity
+                ]
             , div
                 []
                 [ button [ onClick ResetFilter, class "btn" ] [ text "reset filter" ]
@@ -255,6 +282,26 @@ printFilterCategories allCats selected =
                             )
                         ]
                         [ text c ]
+                )
+        )
+
+
+printFilterProductivity : List ProductivityType -> List Int -> Html Msg
+printFilterProductivity allp selected =
+    ul []
+        (allp
+            |> List.map
+                (\c ->
+                    li
+                        [ onClick (FilterSet "productivity" (toString c.index))
+                        , class
+                            (if List.member c.index selected then
+                                "selected"
+                             else
+                                ""
+                            )
+                        ]
+                        [ text c.label ]
                 )
         )
 

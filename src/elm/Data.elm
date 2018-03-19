@@ -14,6 +14,16 @@ apiBase =
     "https://us-central1-time-analyzer-68cd5.cloudfunctions.net/api/"
 
 
+productivityList : List ProductivityType
+productivityList =
+    [ { index = 2, label = "Very productive" }
+    , { index = 1, label = "Productive" }
+    , { index = 0, label = "Neutral" }
+    , { index = -1, label = "Very distractin" }
+    , { index = -2, label = "Very distracting" }
+    ]
+
+
 documentDecoder : Decode.Decoder Document
 documentDecoder =
     DecodePipe.decode Document

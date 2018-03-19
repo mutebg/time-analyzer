@@ -30,6 +30,8 @@ defaultFilter =
     , minTimeSpent = 0
     , categories = []
     , query = Nothing
+    , productivity = []
+    , openActivity = Nothing
     }
 
 
@@ -98,6 +100,9 @@ update msg model =
 
         ReceiveToday date ->
             ( model, Navigation.newUrl ("#day/" ++ (formatDate date)) )
+
+        NavigateToDay date ->
+            ( model, Navigation.newUrl ("#day/" ++ date) )
 
         TypeToken token ->
             ( { model | token = Just token }, Cmd.none )
@@ -171,6 +176,16 @@ updateFilter f key value =
                 in
                     { f | query = query }
 
+            "openActivity" ->
+                let
+                    id =
+                        if value == "" || Just value == f.openActivity then
+                            Nothing
+                        else
+                            Just value
+                in
+                    { f | openActivity = id }
+
             "timeFrom" ->
                 { f | timeFrom = intValue }
 
@@ -189,6 +204,16 @@ updateFilter f key value =
                             value :: f.categories
                 in
                     { f | categories = newCategories }
+
+            "productivity" ->
+                let
+                    newCategories =
+                        if List.member intValue f.productivity then
+                            remove intValue f.productivity
+                        else
+                            intValue :: f.productivity
+                in
+                    { f | productivity = newCategories }
 
             _ ->
                 f

@@ -38,6 +38,14 @@ type alias Filter =
     , minTimeSpent : Int
     , categories : List String
     , query : Maybe String
+    , productivity : List Int
+    , openActivity : Maybe String
+    }
+
+
+type alias ProductivityType =
+    { index : Int
+    , label : String
     }
 
 
@@ -60,6 +68,7 @@ type Msg
     | LoadDocuments (Result Http.Error (List Hour))
     | RequestToday
     | ReceiveToday Date
+    | NavigateToDay String
     | TypeToken String
     | SubmitLoginForm
     | ReceiveToken String
