@@ -83,13 +83,16 @@ printActivity h f a =
         event =
             FilterSet "openActivity" id
 
+        levelClass =
+            (++) " activity--l" <| toString a.productivity
+
         ( className, popup ) =
             if f.openActivity == (Just id) then
                 ( " activity--open", printActivityPopup a )
             else
                 ( "", text "" )
     in
-        div [ class ("activity" ++ className) ]
+        div [ class ("activity" ++ className ++ levelClass) ]
             [ span [ class "activity__time" ] [ text <| secToMin a.totalTimeSpent ]
             , span [ class "activity__name", onClick event ] [ text a.activity ]
             , popup

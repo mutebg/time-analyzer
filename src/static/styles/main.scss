@@ -206,12 +206,37 @@ body {
 
   &__time {
     font-size: 0.9em;
-    padding: 0.2em;
+    padding: 0.1em;
     display: inline-block;
-    background: #ccc;
+    background: #fff;
     border-radius: 3px;
     min-width: 42px;
     text-align: center;
+    border: solid 2px;
+    //color: #fff;
+
+    .activity--l2 & {
+      //background: #2d91ec;
+      border-color: #2d91ec;
+    }
+    .activity--l1 & {
+      //background: #6eccdc;
+      border-color: #6eccdc;
+    }
+    .activity--l0 & {
+      //background: #cedde0;
+      border-color: #cedde0;
+    }
+    .activity--l-1 & {
+      //background: #f9947b;
+      border-color: #f9947b;
+    }
+    .activity--l-2 & {
+      //background: #da421c;
+      border-color: #da421c;
+    }
+
+
   }
 }
 
